@@ -32,6 +32,13 @@
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+    @media print {
+      header, .no-print, button { display: none !important; }
+      body { background: white !important; color: black !important; }
+      table { border-collapse: collapse !important; width: 100% !important; }
+      th, td { border: 1px solid #ccc !important; padding: 6px !important; }
+      .bg-emerald-500 { background-color: #22c55e !important; color: black !important; font-weight: bold !important; }
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -55,7 +62,7 @@
         </div>
 
         <nav id="navbar-links" class="flex items-center space-x-1 sm:space-x-2">
-          <!-- Renderizado dinamicamente pelo JS de acordo com o login -->
+          <!-- Renderizado dinamicamente pelo JS -->
         </nav>
       </div>
     </div>
@@ -86,11 +93,11 @@
         <div id="form-login" class="space-y-4">
           <div>
             <label class="block text-xs text-slate-300 font-medium mb-1">Usuário ou Telefone</label>
-            <input type="text" id="login-user" placeholder="Ex: admin ou seu usuario" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
+            <input type="text" id="login-user" value="admin" placeholder="Ex: admin ou seu usuario" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs text-slate-300 font-medium mb-1">Sua Senha</label>
-            <input type="password" id="login-senha" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
+            <input type="password" id="login-senha" value="1234" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
           </div>
           <button onclick="executarLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 text-white font-black text-sm rounded-xl shadow-lg">Entrar no Sistema</button>
           <p class="text-center text-[11px] text-slate-500">Admin padrão: usuário <strong class="text-slate-300">admin</strong> / senha <strong class="text-slate-300">1234</strong></p>
@@ -132,7 +139,7 @@
               Olá, <span id="home-user-name" class="text-emerald-400">Amigo</span>! 🍀
             </h1>
             <p class="text-slate-300 text-xs sm:text-sm mt-1">
-              Escolha suas 10 dezenas por R$ 10,00 e acompanhe os resultados em tempo real!
+              Confira a planilha geral dos jogos e acertos abaixo ou faça mais apostas!
             </p>
 
             <div class="flex flex-wrap items-center gap-3 mt-5">
@@ -172,29 +179,58 @@
         </div>
       </div>
 
-      <!-- 100 Dezenas + Ranking Integrado -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
-            <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
-              <span>Painel das 100 Dezenas</span>
-              <span id="home-contador-dezenas" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">0 / 100</span>
-            </h3>
+      <!-- Painel 100 Dezenas -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+          <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+            <span>Painel das 100 Dezenas</span>
+            <span id="home-contador-dezenas" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">0 / 100</span>
+          </h3>
+        </div>
+        <div id="grade-100-home" class="grid grid-cols-10 gap-1 sm:gap-2"></div>
+      </div>
+
+      <!-- PLANILHA GERAL DE JOGADORES, DEZENAS E ACERTOS -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-400"></i>
+              <span>Planilha Geral de Jogadores & Acertos</span>
+            </h2>
+            <p class="text-xs text-slate-400">Listagem de todos os participantes com as 10 dezenas e conferência de acertos.</p>
           </div>
-          <div id="grade-100-home" class="grid grid-cols-10 gap-1 sm:gap-2"></div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="compartilharPlanilhaZap()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <span>Compartilhar no WhatsApp</span>
+            </button>
+            <button onclick="window.print()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              <span>Imprimir / PDF</span>
+            </button>
+          </div>
         </div>
 
-        <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
-            <i data-lucide="trophy" class="w-5 h-5 text-amber-400"></i>
-            <span>Ranking ao Vivo</span>
-          </h3>
-          <div id="home-leaderboard" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-left text-xs text-slate-200 border-collapse">
+            <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3.5 text-center w-12">Pos.</th>
+                <th class="py-3 px-3.5">Participante</th>
+                <th class="py-3 px-3.5">WhatsApp</th>
+                <th class="py-3 px-3.5 text-center">10 Dezenas do Jogo</th>
+                <th class="py-3 px-3.5 text-center w-24">Acertos</th>
+                <th class="py-3 px-3.5 text-center w-28">Status</th>
+              </tr>
+            </thead>
+            <tbody id="home-planilha-tbody" class="divide-y divide-slate-800/80 bg-slate-900/60"></tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <!-- TELA 2: JOGAR (LOGADO) -->
+    <!-- TELA 2: JOGAR -->
     <section id="view-jogar" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="text-center">
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-2">
@@ -204,14 +240,12 @@
         <h1 class="text-2xl sm:text-4xl font-black text-white">Escolha suas 10 Dezenas</h1>
       </div>
 
-      <!-- Dados do Participante -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <h2 class="text-base font-bold text-white flex items-center gap-2">
             <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
             <span>Participante</span>
           </h2>
-          <!-- Seletor de usuário para admin -->
           <div id="admin-user-selector-container" class="hidden flex items-center gap-2 text-xs">
             <span class="text-slate-300 font-semibold">Lançar para:</span>
             <select id="admin-user-select" onchange="selecionarUsuarioAdmin(this.value)" class="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-white font-medium focus:border-emerald-500 focus:outline-none"></select>
@@ -230,7 +264,6 @@
         </div>
       </div>
 
-      <!-- Container de Jogos -->
       <div id="jogos-container" class="space-y-6"></div>
 
       <div class="text-center">
@@ -240,7 +273,6 @@
         </button>
       </div>
 
-      <!-- Barra Fixa de Checkout -->
       <div class="sticky bottom-4 z-40 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <span class="text-xs text-slate-400 block font-medium">Resumo do Pedido</span>
@@ -287,6 +319,10 @@
           <p class="text-xs text-slate-400">Lançamento de milhares da Federal, gestão de usuários e senhas</p>
         </div>
         <div class="flex gap-2">
+          <button onclick="compartilharPlanilhaZap()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>Compartilhar Planilha</span>
+          </button>
           <button onclick="carregarDadosExemplo()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
             <span>Exemplo</span>
@@ -352,6 +388,14 @@
         </button>
       </div>
 
+      <!-- Importar Lista de Jogos em Texto -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+        <h3 class="font-extrabold text-white text-base">Colar / Importar Lista de Jogos (Todos Pagos)</h3>
+        <p class="text-xs text-slate-400">Cole abaixo os participantes e suas 10 dezenas (1 por linha):</p>
+        <textarea id="import-txt-area" rows="6" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl font-mono text-xs text-white" placeholder="Carlos Silva: 04 11 19 21 33 45 56 67 80 99"></textarea>
+        <button onclick="importarListaTexto()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs">Importar Jogos Pagos</button>
+      </div>
+
       <!-- Gestão de Usuários e Senhas -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
         <div class="flex justify-between items-center mb-3">
@@ -377,7 +421,21 @@
   </main>
 
   <script>
-    // BANCO DE DADOS LOCAL
+    const DEMO_PARTICIPANTES = [
+      { nome: 'Carlos Silva', tel: '(11) 98765-4321', dezenas: ['04', '11', '19', '21', '33', '45', '56', '67', '80', '99'] },
+      { nome: 'Mariana Souza', tel: '(21) 99876-5432', dezenas: ['02', '11', '19', '28', '34', '52', '61', '73', '84', '90'] },
+      { nome: 'Roberto Lima', tel: '(31) 97654-3210', dezenas: ['00', '15', '21', '22', '38', '47', '52', '69', '77', '88'] },
+      { nome: 'Fernanda Rocha', tel: '(41) 98888-7777', dezenas: ['05', '12', '19', '23', '37', '48', '59', '66', '71', '85'] },
+      { nome: 'Lucas Mendes', tel: '(51) 99123-4567', dezenas: ['01', '11', '21', '31', '41', '51', '61', '71', '81', '91'] },
+      { nome: 'Juliana Costa', tel: '(71) 98234-5678', dezenas: ['09', '14', '19', '27', '35', '42', '55', '68', '79', '94'] },
+      { nome: 'Marcelo Dias', tel: '(81) 98111-2222', dezenas: ['03', '11', '25', '36', '49', '50', '63', '74', '87', '98'] },
+      { nome: 'Patricia Ramos', tel: '(85) 99222-3333', dezenas: ['07', '18', '21', '29', '43', '54', '65', '78', '89', '93'] },
+      { nome: 'Bruno Alves', tel: '(61) 99333-4444', dezenas: ['06', '16', '19', '26', '39', '46', '58', '60', '72', '86'] },
+      { nome: 'Camila Barros', tel: '(19) 99444-5555', dezenas: ['10', '11', '20', '30', '40', '52', '62', '70', '82', '92'] },
+      { nome: 'Andre Santos', tel: '(12) 99555-6666', dezenas: ['08', '17', '21', '32', '44', '57', '64', '75', '83', '97'] },
+      { nome: 'Larissa Ferreira', tel: '(27) 99666-7777', dezenas: ['11', '13', '19', '24', '35', '45', '53', '67', '76', '96'] },
+    ];
+
     let appState = {
       config: {
         titulo: 'Bingo das Dezenas entre Amigos',
@@ -396,11 +454,30 @@
     let currentUser = null;
     let jogosAtuais = [[]];
 
+    function inicializarDadosTeste() {
+      if (appState.cartelas.length === 0) {
+        DEMO_PARTICIPANTES.forEach((p, idx) => {
+          const user = { id: `USR-${idx + 1}`, nome: p.nome, username: p.nome.toLowerCase().replace(/\s+/g, ''), telefone: p.tel, senha: '123', role: 'jogador' };
+          appState.users.push(user);
+          appState.cartelas.push({
+            id: `JOG-${(idx + 1).toString().padStart(3, '0')}`,
+            userId: user.id,
+            jogadorNome: p.nome,
+            jogadorTelefone: p.tel,
+            dezenas: [...p.dezenas].sort((a,b) => parseInt(a,10) - parseInt(b,10)),
+            pago: true,
+            createdAt: new Date().toISOString()
+          });
+        });
+      }
+    }
+
     function carregarDados() {
       const saved = localStorage.getItem('bolao_bingo_db');
       if (saved) {
         try { appState = JSON.parse(saved); } catch (e) {}
       }
+      inicializarDadosTeste();
       const savedUser = localStorage.getItem('bolao_user_session');
       if (savedUser) {
         try { currentUser = JSON.parse(savedUser); } catch (e) { currentUser = null; }
@@ -542,7 +619,7 @@
       lucide.createIcons();
     }
 
-    // --- HOME (COM RANKING E 100 DEZENAS) ---
+    // --- HOME COM PLANILHA GERAL ---
     function renderHome() {
       if (!currentUser) return;
       document.getElementById('home-user-name').innerText = currentUser.nome;
@@ -577,33 +654,60 @@
 
       document.getElementById('home-contador-dezenas').innerText = `${appState.dezenasSorteadas.length} / 100`;
 
-      // Ranking
-      const lb = document.getElementById('home-leaderboard');
-      lb.innerHTML = '';
+      // PLANILHA GERAL DE JOGADORES (ESTILO PDF)
+      const tbody = document.getElementById('home-planilha-tbody');
+      tbody.innerHTML = '';
+
       const ranking = appState.cartelas.map(c => {
         const acertos = c.dezenas.filter(d => sorteadosSet.has(d));
         return { ...c, acertos, totalAcertos: acertos.length, faltam: 10 - acertos.length };
       }).sort((a,b) => b.totalAcertos - a.totalAcertos);
 
       if (ranking.length === 0) {
-        lb.innerHTML = '<div class="text-slate-500 text-xs text-center py-6">Nenhuma cartela registrada.</div>';
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500 text-xs">Nenhum jogador cadastrado no momento.</td></tr>';
       } else {
         ranking.forEach((item, idx) => {
           const isWinner = item.totalAcertos === 10;
-          lb.innerHTML += `
-            <div class="p-3 rounded-xl border ${isWinner ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-800/80 border-slate-700'}">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-white text-sm">${idx + 1}º ${item.jogadorNome}</span>
-                <span class="font-black text-emerald-400">${item.totalAcertos} / 10</span>
-              </div>
-              <div class="w-full bg-slate-950 rounded-full h-2 mb-1.5">
-                <div class="bg-emerald-500 h-2 rounded-full" style="width: ${item.totalAcertos * 10}%"></div>
-              </div>
-              <span class="text-[11px] text-slate-400">${isWinner ? '🎉 BINGO!' : `Faltam ${item.faltam} dezena(s)`}</span>
-            </div>
+          let dezenasBadges = '';
+          item.dezenas.forEach(d => {
+            const hit = sorteadosSet.has(d);
+            dezenasBadges += `<span class="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-black ${hit ? 'bg-emerald-500 text-slate-950 ring-1 ring-emerald-300' : 'bg-slate-800 text-slate-300 border border-slate-700'}">${d}</span>`;
+          });
+
+          tbody.innerHTML += `
+            <tr class="${isWinner ? 'bg-amber-500/15 font-bold' : ''}">
+              <td class="py-3 px-3.5 text-center font-bold text-slate-400">${idx + 1}º</td>
+              <td class="py-3 px-3.5 font-bold text-white">${item.jogadorNome} <span class="text-[11px] text-emerald-400 font-mono block">${item.id}</span></td>
+              <td class="py-3 px-3.5 font-mono text-slate-400">${item.jogadorTelefone}</td>
+              <td class="py-3 px-3.5 text-center"><div class="flex flex-wrap justify-center gap-1">${dezenasBadges}</div></td>
+              <td class="py-3 px-3.5 text-center"><span class="text-base font-black text-emerald-400 font-mono">${item.totalAcertos}</span> <span class="text-slate-500 text-xs">/ 10</span></td>
+              <td class="py-3 px-3.5 text-center">${isWinner ? '<span class="px-2 py-0.5 bg-amber-400 text-slate-950 font-black rounded-full text-xs">🎉 BINGO!</span>' : `<span class="text-xs text-slate-400">Falta(m) ${item.faltam}</span>`}</td>
+            </tr>
           `;
         });
       }
+    }
+
+    function compartilharPlanilhaZap() {
+      const dezenas = appState.dezenasSorteadas || [];
+      let txt = `📊 *PLANILHA OFICIAL DE RESULTADOS - ${appState.config.titulo.toUpperCase()}*\n`;
+      txt += `🎲 *Modalidade:* ${appState.config.modoExtracao === '15_dezenas' ? '15 Dezenas (Iniciais, Centrais e Finais)' : 'Dezena Final'}\n`;
+      txt += `🔢 *Dezenas Sorteadas (${dezenas.length}/100):*\n👉 [ ${dezenas.join(' - ')} ]\n`;
+      txt += `━━━━━━━━━━━━━━━━━━━━━\n🏆 *CLASSIFICAÇÃO GERAL:*\n\n`;
+
+      const sorteadosSet = new Set(dezenas);
+      const ranking = appState.cartelas.map(c => {
+        const acertos = c.dezenas.filter(d => sorteadosSet.has(d));
+        return { ...c, acertos, totalAcertos: acertos.length, faltam: 10 - acertos.length };
+      }).sort((a,b) => b.totalAcertos - a.totalAcertos);
+
+      ranking.forEach((item, idx) => {
+        txt += `${idx + 1}º *${item.jogadorNome}* (${item.id}): *${item.totalAcertos}/10 acertos*\n`;
+        txt += `   Dezenas: [ ${item.dezenas.join(' ')} ]\n\n`;
+      });
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
+      window.open(url, '_blank');
     }
 
     // --- JOGAR ---
@@ -721,13 +825,13 @@
           jogadorNome: nome,
           jogadorTelefone: tel,
           dezenas,
-          pago: currentUser.role === 'admin',
+          pago: true,
           createdAt: new Date().toISOString()
         });
       });
 
       salvarDados();
-      alert('Jogos registrados com sucesso!');
+      alert('Jogos registrados como PAGO com sucesso!');
       jogosAtuais = [[]];
       navegar('minhas-cartelas');
     }
@@ -771,7 +875,7 @@
             <div class="flex flex-wrap gap-1.5 my-3">${dezenasHtml}</div>
             <div class="text-[11px] text-slate-400 flex justify-between">
               <span>${acertos.length === 10 ? '🎉 BINGO!' : `Faltam ${10 - acertos.length} dezenas`}</span>
-              <span class="${c.pago ? 'text-emerald-400' : 'text-amber-400'} font-semibold">${c.pago ? '✓ Confirmado' : '⏳ Pendente'}</span>
+              <span class="text-emerald-400 font-semibold">✓ Confirmado (Pago)</span>
             </div>
           </div>
         `;
@@ -830,6 +934,45 @@
       for (let i = 1; i <= 5; i++) document.getElementById(`fed-${i}`).value = '';
     }
 
+    function importarListaTexto() {
+      const txt = document.getElementById('import-txt-area').value.trim();
+      if (!txt) return;
+
+      const linhas = txt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let count = 0;
+
+      linhas.forEach((linha, idx) => {
+        const partes = linha.split(/[:;\t-]/);
+        let nome = `Participante ${idx + 1}`;
+        let dezenasStr = linha;
+        if (partes.length >= 2) {
+          nome = partes[0].trim();
+          dezenasStr = partes.slice(1).join(' ').trim();
+        }
+
+        const nums = dezenasStr.split(/[\s,.;-]+/).map(s => formatarDezena(s)).filter(s => s.length === 2);
+        const set = new Set(nums);
+        if (set.size === 10) {
+          const u = { id: `USR-${Date.now()}-${idx}`, nome, username: nome.toLowerCase().replace(/\s+/g, ''), telefone: '(11) 99999-9999', senha: '123', role: 'jogador' };
+          if (!appState.users.find(x => x.username === u.username)) appState.users.push(u);
+          appState.cartelas.push({
+            id: `JOG-${(appState.cartelas.length + 1).toString().padStart(3, '0')}`,
+            userId: u.id,
+            jogadorNome: nome,
+            jogadorTelefone: u.telefone,
+            dezenas: Array.from(set).sort((a,b) => parseInt(a,10) - parseInt(b,10)),
+            pago: true,
+            createdAt: new Date().toISOString()
+          });
+          count++;
+        }
+      });
+
+      salvarDados();
+      alert(`${count} jogos importados como PAGO com sucesso!`);
+      navegar('inicio');
+    }
+
     function abrirNovoUserPrompt() {
       const nome = prompt('Nome do Participante:');
       if (!nome) return;
@@ -856,18 +999,16 @@
     }
 
     function carregarDadosExemplo() {
-      appState.cartelas = [
-        { id: 'JOG-001', userId: 'USR-1', jogadorNome: 'Carlos Silva', jogadorTelefone: '(11) 98765-4321', dezenas: ['04','12','19','21','33','45','56','67','80','99'], pago: true },
-        { id: 'JOG-002', userId: 'USR-2', jogadorNome: 'Mariana Souza', jogadorTelefone: '(21) 99876-5432', dezenas: ['02','11','28','34','52','61','73','84','90','95'], pago: true }
-      ];
+      appState.cartelas = [];
+      appState.users = [{ id: 'USR-ADMIN', nome: 'Administrador', username: 'admin', telefone: '(11) 99999-8888', senha: '1234', role: 'admin' }];
+      inicializarDadosTeste();
       appState.sorteios = [];
       appState.dezenasSorteadas = [];
-      // Lança milhar 2119 no modo 15 dezenas (21, 11, 19)
       const dez = extrairDezenasMilhar('2119', '15_dezenas');
       appState.sorteios.push({ numeroBruto: '2119', dezenasExtraidas: dez, dezenaExtraida: '19', premioLabel: '1º Prêmio' });
       dez.forEach(d => appState.dezenasSorteadas.push(d));
       salvarDados();
-      alert('Dados de exemplo carregados!');
+      alert('12 Participantes com jogos pagos carregados com sucesso!');
     }
 
     function reiniciarBolao() {
