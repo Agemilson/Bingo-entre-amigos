@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BolãoBingo - Sorteio de Bingo das Dezenas entre Amigos</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bingo: {
+              500: '#22c55e',
+              600: '#16a34a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 50%, #020617 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    @keyframes pulseFast {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .animate-pulse-fast {
+      animation: pulseFast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div onclick="navegar('inicio')" class="flex items-center space-x-3 cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+            <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <span class="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-emerald-400">
+              Bolão<span class="text-emerald-400">Bingo</span>
+            </span>
+            <span class="hidden sm:block text-[10px] text-emerald-400/80 font-medium uppercase tracking-wider">
+              10 Dezenas • Loteria Federal & Bicho
+            </span>
+          </div>
+        </div>
+
+        <nav class="flex items-center space-x-1 sm:space-x-2">
+          <button onclick="navegar('inicio')" id="nav-inicio" class="nav-btn flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-slate-800 text-emerald-400">
+            <i data-lucide="dices" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Início</span>
+          </button>
+          <button onclick="navegar('jogar')" id="nav-jogar" class="nav-btn flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md shadow-emerald-600/30 hover:scale-105 transition-all">
+            <i data-lucide="ticket" class="w-4 h-4"></i>
+            <span>Fazer Jogos (R$ 10)</span>
+          </button>
+          <button onclick="navegar('telao')" id="nav-telao" class="nav-btn flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60">
+            <i data-lucide="tv" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Telão ao Vivo</span>
+          </button>
+          <button onclick="navegar('minhas-cartelas')" id="nav-minhas-cartelas" class="nav-btn flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Minhas Cartelas</span>
+          </button>
+          <button onclick="navegar('admin')" id="nav-admin" class="nav-btn flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Organizador</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- TELA 1: INÍCIO / HUB -->
+    <section id="view-inicio" class="space-y-8">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950/60 border border-slate-800 p-6 sm:p-10 shadow-2xl">
+        <div class="max-w-3xl relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-4">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Sorteio Oficial com 10 Dezenas por Cartela</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+            Bingo das Dezenas <br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-yellow-300">
+              entre Amigos & Família
+            </span>
+          </h1>
+
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+            Escolha 10 dezenas de 00 a 99 (sem repetir). Acompanhe o sorteio em tempo real
+            baseado nos resultados da <strong>Loteria Federal</strong> e <strong>Jogo do Bicho</strong>.
+            Quem bater 10 acertos primeiro fatura o bolão!
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+            <button onclick="navegar('jogar')" class="px-6 py-3.5 rounded-xl font-black text-sm bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white shadow-xl shadow-emerald-600/30 flex items-center gap-2 transition-all hover:scale-105">
+              <i data-lucide="ticket" class="w-5 h-5"></i>
+              <span>Fazer Jogos (R$ 10,00 cada)</span>
+            </button>
+            <button onclick="navegar('telao')" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700 flex items-center gap-2 transition-all hover:scale-105">
+              <i data-lucide="tv" class="w-5 h-5 text-emerald-400"></i>
+              <span>Abrir Telão ao Vivo</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Prêmio Acumulado</span>
+            <span id="home-premio" class="text-2xl sm:text-3xl font-black text-emerald-400">R$ 0,00</span>
+          </div>
+          <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Total de Cartelas</span>
+            <span id="home-cartelas" class="text-2xl sm:text-3xl font-black text-white">0</span>
+          </div>
+          <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Dezenas Sorteadas</span>
+            <span id="home-dezenas" class="text-2xl sm:text-3xl font-black text-amber-400">0 / 100</span>
+          </div>
+          <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Status</span>
+            <span id="home-status" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-400 mt-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Aberto para Apostas
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regras -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg mb-3">1</div>
+          <h3 class="font-bold text-white text-base mb-1">10 Dezenas Únicas</h3>
+          <p class="text-xs text-slate-400">Escolha 10 números de 00 a 99 sem repetição no mesmo jogo.</p>
+        </div>
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg mb-3">2</div>
+          <h3 class="font-bold text-white text-base mb-1">R$ 10,00 por Cartela</h3>
+          <p class="text-xs text-slate-400">Adicione quantos jogos quiser no mesmo pedido e pague via PIX.</p>
+        </div>
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-lg mb-3">3</div>
+          <h3 class="font-bold text-white text-base mb-1">Extração pela Federal</h3>
+          <p class="text-xs text-slate-400">Milhar <span class="text-emerald-400 font-mono">2119</span> ➔ Dezena <span class="text-emerald-400 font-mono">19</span> marcada automaticamente!</p>
+        </div>
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg mb-3">4</div>
+          <h3 class="font-bold text-white text-base mb-1">BINGO! 10 Acertos</h3>
+          <p class="text-xs text-slate-400">Quem completar as 10 dezenas primeiro fatura o prêmio acumulado!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 2: FAZER JOGOS -->
+    <section id="view-jogar" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-2">
+          <i data-lucide="ticket" class="w-4 h-4"></i>
+          <span>Faça sua Aposta • R$ 10,00 por Jogo</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black text-white">Escolha suas 10 Dezenas</h1>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-1">
+          Selecione 10 números de 00 a 99 em cada cartela. Você pode adicionar múltiplos jogos no mesmo pedido!
+        </p>
+      </div>
+
+      <!-- Dados do Jogador -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+        <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+          <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
+          <span>Dados do Participante</span>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Seu Nome Completo *</label>
+            <input type="text" id="jogador-nome" placeholder="Ex: Carlos Silva" class="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">WhatsApp com DDD *</label>
+            <input type="text" id="jogador-tel" placeholder="(11) 99999-8888" class="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-emerald-500 focus:outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Jogos -->
+      <div id="jogos-container" class="space-y-6"></div>
+
+      <!-- Botão Adicionar Jogo -->
+      <div class="text-center">
+        <button onclick="adicionarNovoJogo()" class="px-6 py-3 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 hover:border-emerald-400 transition-all inline-flex items-center gap-2">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>+ Adicionar Mais um Jogo (+ R$ 10,00)</span>
+        </button>
+      </div>
+
+      <!-- Resumo e Checkout Fixo -->
+      <div class="sticky bottom-4 z-40 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs text-slate-400 block font-medium">Resumo do Pedido</span>
+          <div class="flex items-baseline gap-2">
+            <span id="checkout-total" class="text-2xl sm:text-3xl font-black text-emerald-400">R$ 10,00</span>
+            <span id="checkout-qtd" class="text-xs text-slate-400">(1 jogo de 10 dezenas)</span>
+          </div>
+        </div>
+        <button onclick="finalizarPedido()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-black text-sm bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 hover:scale-105 transition-all">
+          <span>Confirmar & Pagar com PIX</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- TELA 3: TELÃO AO VIVO -->
+    <section id="view-telao" class="hidden space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 flex items-center justify-center font-black">
+            <i data-lucide="tv" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+              <span>Telão Oficial do Bingo</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            </h1>
+            <p class="text-xs text-slate-400">Sorteio de 10 dezenas • Extração Loteria Federal & Bicho</p>
+          </div>
+        </div>
+        <div class="bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-800 text-right">
+          <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Prêmio Acumulado</span>
+          <span id="telao-premio" class="text-xl sm:text-2xl font-black text-emerald-400">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- Destaque da Última Dezena -->
+      <div id="telao-ultimo-sorteio" class="bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-emerald-500/20 border-2 border-amber-400/80 rounded-3xl p-5 sm:p-6 shadow-2xl text-center flex flex-col sm:flex-row items-center justify-around gap-4">
+        <div>
+          <span class="text-xs font-bold text-amber-300 uppercase tracking-widest block mb-1">Última Extração Registrada</span>
+          <div id="telao-ultimo-concurso" class="text-lg sm:text-xl font-bold text-white">Sorteio Oficial</div>
+          <div id="telao-ultimo-milhar" class="text-xs text-slate-300 mt-1 font-mono">Aguardando 1º sorteio</div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-xs font-black text-amber-300 uppercase tracking-wider text-right">DEZENA<br>SORTEADA</div>
+          <div id="telao-ultima-dezena-num" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 font-black text-4xl sm:text-5xl flex items-center justify-center shadow-2xl shadow-amber-500/50 ring-4 ring-amber-300">
+            --
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid 100 dezenas + Leaderboard -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+            <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+              <span>Painel das 100 Dezenas</span>
+              <span id="telao-contador-dezenas" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">0 / 100</span>
+            </h3>
+          </div>
+          <div id="grade-100-telao" class="grid grid-cols-10 gap-1 sm:gap-2"></div>
+        </div>
+
+        <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+          <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+            <i data-lucide="trophy" class="w-5 h-5 text-amber-400"></i>
+            <span>Ranking ao Vivo</span>
+          </h3>
+          <div id="telao-leaderboard" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 4: MINHAS CARTELAS -->
+    <section id="view-minhas-cartelas" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-2">
+          <i data-lucide="ticket" class="w-4 h-4"></i>
+          <span>Consulta de Cartelas</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black text-white">Acompanhe suas Dezenas</h1>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mt-1">
+          Digite seu nome ou telefone para ver o status em tempo real de cada uma das suas cartelas.
+        </p>
+      </div>
+
+      <div class="max-w-xl mx-auto">
+        <input type="text" id="busca-cartela" oninput="renderMinhasCartelas()" placeholder="Filtrar por nome ou WhatsApp..." class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-emerald-500 focus:outline-none">
+      </div>
+
+      <div id="minhas-cartelas-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- TELA 5: ORGANIZADOR / ADMIN -->
+    <section id="view-admin" class="hidden space-y-6">
+      <!-- Login PIN -->
+      <div id="admin-login-box" class="max-w-md mx-auto py-12">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center shadow-2xl">
+          <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+            <i data-lucide="lock" class="w-8 h-8"></i>
+          </div>
+          <h2 class="text-2xl font-black text-white">Painel do Organizador</h2>
+          <p class="text-xs text-slate-400 mt-1 mb-6">Digite o PIN (Padrão: <strong class="text-emerald-400 font-mono">1234</strong>)</p>
+          <input type="password" id="admin-pin-input" placeholder="PIN" class="w-full text-center text-2xl font-black tracking-widest px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white mb-4 focus:border-emerald-500 focus:outline-none">
+          <button onclick="autenticarAdmin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg">Acessar Painel</button>
+        </div>
+      </div>
+
+      <!-- Painel Completo -->
+      <div id="admin-dashboard" class="hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div>
+            <h1 class="text-2xl font-black text-white flex items-center gap-2">
+              <span>Painel do Organizador</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Admin</span>
+            </h1>
+            <p class="text-xs text-slate-400">Lançamento de milhares/dezenas e conferência de cartelas</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="carregarDadosExemplo()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Carregar Exemplo</span>
+            </button>
+            <button onclick="reiniciarBolao()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30 flex items-center gap-1">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Reiniciar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lançamento da Federal (1º ao 5º) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <h3 class="font-extrabold text-white text-base mb-1 flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+            <span>Lançar Extração da Loteria Federal (1º ao 5º Prêmio)</span>
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Digite a milhar sorteada (ex: 2119). O sistema extrai e marca a dezena 19 na hora!</p>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">1º Prêmio</span>
+              <input type="text" id="fed-1" placeholder="Ex: 2119" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">2º Prêmio</span>
+              <input type="text" id="fed-2" placeholder="Ex: 8452" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">3º Prêmio</span>
+              <input type="text" id="fed-3" placeholder="Ex: 0304" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">4º Prêmio</span>
+              <input type="text" id="fed-4" placeholder="Ex: 7890" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">5º Prêmio</span>
+              <input type="text" id="fed-5" placeholder="Ex: 4533" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            </div>
+          </div>
+
+          <button onclick="lancarLoteFederal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md">
+            Lançar Prêmios da Federal
+          </button>
+        </div>
+
+        <!-- Lançamento Avulso / Globo Virtual -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h4 class="font-bold text-white text-sm mb-2">Lançamento Avulso (Milhar ou Dezena)</h4>
+            <div class="flex gap-2">
+              <input type="text" id="avulso-input" placeholder="Ex: 2119 ou 19" class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-center font-mono font-bold">
+              <button onclick="lancarAvulso()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg">Lançar</button>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-white text-sm">Globo Eletrônico Virtual</h4>
+              <p class="text-xs text-slate-400">Sortear uma dezena aleatória de 00 a 99</p>
+            </div>
+            <button onclick="sortearGloboVirtual()" class="px-4 py-2.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 font-bold text-xs rounded-xl flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Sortear Agora</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabela de Cartelas no Admin -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <h3 class="font-extrabold text-white text-base mb-3">Cartelas & Status de Pagamento</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">ID</th>
+                  <th class="py-2.5 px-3">Participante</th>
+                  <th class="py-2.5 px-3">WhatsApp</th>
+                  <th class="py-2.5 px-3">Dezenas</th>
+                  <th class="py-2.5 px-3 text-center">Acertos</th>
+                  <th class="py-2.5 px-3 text-center">Pagamento</th>
+                </tr>
+              </thead>
+              <tbody id="admin-cartelas-tbody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL PIX -->
+  <div id="modal-pix" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3">
+        <i data-lucide="qr-code" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-xl font-black text-white">Jogos Cadastrados com Sucesso!</h3>
+      <p class="text-xs text-slate-400 mt-1 mb-4">Efetue o pagamento via PIX para confirmar sua participação.</p>
+      
+      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-4">
+        <span class="text-xs text-slate-400">Total a Pagar</span>
+        <div id="pix-modal-valor" class="text-3xl font-black text-emerald-400">R$ 10,00</div>
+      </div>
+
+      <div class="bg-slate-800 p-3 rounded-xl text-left text-xs mb-4">
+        <span class="text-slate-400 block mb-1">Chave PIX (E-mail):</span>
+        <div class="font-mono font-bold text-white select-all">amigosbingo@email.com</div>
+      </div>
+
+      <button onclick="fecharModalPix()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md mb-2">
+        Entendi, Fechar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ESTADO DA APLICAÇÃO (Salvo no LocalStorage)
+    let appState = {
+      config: {
+        titulo: 'Bingo das Dezenas entre Amigos',
+        valorPorJogo: 10.0,
+        adminPin: '1234',
+        chavePix: 'amigosbingo@email.com',
+      },
+      cartelas: [],
+      sorteios: [],
+      dezenasSorteadas: [],
+    };
+
+    let jogosAtuais = [[]]; // Para a tela de jogar
+
+    function carregarDados() {
+      const saved = localStorage.getItem('bolao_bingo_db');
+      if (saved) {
+        try {
+          appState = JSON.parse(saved);
+        } catch (e) {}
+      }
+      atualizarViews();
+    }
+
+    function salvarDados() {
+      localStorage.setItem('bolao_bingo_db', JSON.stringify(appState));
+      atualizarViews();
+    }
+
+    function formatarDezena(val) {
+      const n = parseInt(val, 10);
+      if (isNaN(n) || n < 0 || n > 99) return '';
+      return n.toString().padStart(2, '0');
+    }
+
+    function extrairDezena(milhar) {
+      if (!milhar) return null;
+      const clean = milhar.toString().replace(/\D/g, '');
+      if (!clean) return null;
+      if (clean.length === 1) return '0' + clean;
+      return clean.slice(-2);
+    }
+
+    function navegar(telaId) {
+      ['inicio', 'jogar', 'telao', 'minhas-cartelas', 'admin'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const nav = document.getElementById(`nav-${t}`);
+        if (nav && t !== 'jogar') {
+          nav.classList.remove('bg-slate-800', 'text-emerald-400');
+          nav.classList.add('text-slate-300');
+        }
+      });
+
+      document.getElementById(`view-${telaId}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${telaId}`);
+      if (activeNav && telaId !== 'jogar') {
+        activeNav.classList.add('bg-slate-800', 'text-emerald-400');
+      }
+
+      if (telaId === 'jogar') renderJogos();
+      if (telaId === 'telao') renderTelao();
+      if (telaId === 'minhas-cartelas') renderMinhasCartelas();
+      lucide.createIcons();
+    }
+
+    // --- TELA DE JOGAR ---
+    function renderJogos() {
+      const container = document.getElementById('jogos-container');
+      container.innerHTML = '';
+
+      jogosAtuais.forEach((dezenas, index) => {
+        const div = document.createElement('div');
+        div.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl';
+
+        let gridHtml = '';
+        for (let i = 0; i < 100; i++) {
+          const d = formatarDezena(i);
+          const sel = dezenas.includes(d);
+          const dis = !sel && dezenas.length >= 10;
+          gridHtml += `
+            <button type="button" onclick="toggleDezena(${index}, '${d}')" class="h-7 sm:h-9 text-xs sm:text-sm font-bold rounded-lg ${
+              sel ? 'bg-emerald-500 text-slate-950 font-black shadow-lg scale-105' :
+              dis ? 'bg-slate-800/40 text-slate-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+            }">${d}</button>
+          `;
+        }
+
+        div.innerHTML = `
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <h3 class="font-bold text-white flex items-center gap-2">
+              <span class="w-7 h-7 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">#${index + 1}</span>
+              Jogo ${index + 1} (${dezenas.length}/10)
+            </h3>
+            <div class="flex gap-2">
+              <button onclick="surpresinhaJogo(${index})" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-xs font-bold hover:bg-amber-500/30">Surpresinha</button>
+              ${jogosAtuais.length > 1 ? `<button onclick="removerJogo(${index})" class="text-xs text-red-400 hover:underline">Excluir</button>` : ''}
+            </div>
+          </div>
+          <div class="grid grid-cols-10 gap-1 sm:gap-1.5">${gridHtml}</div>
+        `;
+        container.appendChild(div);
+      });
+
+      const total = jogosAtuais.length * 10;
+      document.getElementById('checkout-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      document.getElementById('checkout-qtd').innerText = `(${jogosAtuais.length} jogo${jogosAtuais.length > 1 ? 's' : ''} de 10 dezenas)`;
+    }
+
+    function toggleDezena(gameIdx, dez) {
+      const arr = jogosAtuais[gameIdx];
+      if (arr.includes(dez)) {
+        jogosAtuais[gameIdx] = arr.filter(d => d !== dez);
+      } else {
+        if (arr.length >= 10) return;
+        jogosAtuais[gameIdx] = [...arr, dez].sort((a,b) => parseInt(a,10) - parseInt(b,10));
+      }
+      renderJogos();
+    }
+
+    function surpresinhaJogo(gameIdx) {
+      const set = new Set();
+      while (set.size < 10) {
+        set.add(Math.floor(Math.random() * 100).toString().padStart(2, '0'));
+      }
+      jogosAtuais[gameIdx] = Array.from(set).sort((a,b) => parseInt(a,10) - parseInt(b,10));
+      renderJogos();
+    }
+
+    function adicionarNovoJogo() {
+      jogosAtuais.push([]);
+      renderJogos();
+    }
+
+    function removerJogo(idx) {
+      if (jogosAtuais.length <= 1) return;
+      jogosAtuais.splice(idx, 1);
+      renderJogos();
+    }
+
+    function finalizarPedido() {
+      const nome = document.getElementById('jogador-nome').value.trim();
+      const tel = document.getElementById('jogador-tel').value.trim();
+
+      if (!nome || !tel) {
+        alert('Por favor, preencha seu Nome e WhatsApp.');
+        return;
+      }
+
+      for (let i = 0; i < jogosAtuais.length; i++) {
+        if (jogosAtuais[i].length !== 10) {
+          alert(`O Jogo #${i + 1} possui apenas ${jogosAtuais[i].length} dezenas. Preencha 10 dezenas!`);
+          return;
+        }
+      }
+
+      jogosAtuais.forEach(dezenas => {
+        const id = `JOG-${(appState.cartelas.length + 1).toString().padStart(3, '0')}`;
+        appState.cartelas.push({
+          id,
+          jogadorNome: nome,
+          jogadorTelefone: tel,
+          dezenas,
+          pago: false,
+          createdAt: new Date().toISOString()
+        });
+      });
+
+      salvarDados();
+
+      const total = jogosAtuais.length * 10;
+      document.getElementById('pix-modal-valor').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      document.getElementById('modal-pix').classList.remove('hidden');
+
+      // Limpa formulário
+      jogosAtuais = [[]];
+      document.getElementById('jogador-nome').value = '';
+      document.getElementById('jogador-tel').value = '';
+      renderJogos();
+    }
+
+    function fecharModalPix() {
+      document.getElementById('modal-pix').classList.add('hidden');
+      navegar('minhas-cartelas');
+    }
+
+    // --- TELÃO ---
+    function renderTelao() {
+      const grid = document.getElementById('grade-100-telao');
+      grid.innerHTML = '';
+      const sorteadosSet = new Set(appState.dezenasSorteadas);
+      const ultimo = appState.sorteios[appState.sorteios.length - 1];
+
+      for (let i = 0; i < 100; i++) {
+        const d = formatarDezena(i);
+        const isSorted = sorteadosSet.has(d);
+        const isLast = ultimo && ultimo.dezenaExtraida === d;
+
+        grid.innerHTML += `
+          <div class="h-8 sm:h-10 rounded-lg flex items-center justify-center font-bold text-xs sm:text-base ${
+            isLast ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-300 animate-bounce' :
+            isSorted ? 'bg-emerald-500 text-slate-950 font-black shadow-md' : 'bg-slate-800 text-slate-400 border border-slate-700'
+          }">${d}</div>
+        `;
+      }
+
+      if (ultimo) {
+        document.getElementById('telao-ultimo-concurso').innerText = `${ultimo.premioLabel || 'Extração'} • ${ultimo.concurso || 'Federal'}`;
+        document.getElementById('telao-ultimo-milhar').innerText = `Milhar: ${ultimo.numeroBruto}`;
+        document.getElementById('telao-ultima-dezena-num').innerText = ultimo.dezenaExtraida;
+      }
+
+      document.getElementById('telao-contador-dezenas').innerText = `${appState.dezenasSorteadas.length} / 100`;
+
+      // Leaderboard
+      const lb = document.getElementById('telao-leaderboard');
+      lb.innerHTML = '';
+
+      const ranking = appState.cartelas.map(c => {
+        const acertos = c.dezenas.filter(d => sorteadosSet.has(d));
+        return { ...c, acertos, totalAcertos: acertos.length, faltam: 10 - acertos.length };
+      }).sort((a,b) => b.totalAcertos - a.totalAcertos);
+
+      if (ranking.length === 0) {
+        lb.innerHTML = '<div class="text-slate-500 text-xs text-center py-6">Nenhuma cartela no momento.</div>';
+      } else {
+        ranking.forEach((item, idx) => {
+          const isWinner = item.totalAcertos === 10;
+          lb.innerHTML += `
+            <div class="p-3 rounded-xl border ${isWinner ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-800/80 border-slate-700'}">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-white text-sm">${idx + 1}º ${item.jogadorNome} (${item.id})</span>
+                <span class="font-black text-emerald-400">${item.totalAcertos} / 10</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-2 mb-2">
+                <div class="bg-emerald-500 h-2 rounded-full" style="width: ${item.totalAcertos * 10}%"></div>
+              </div>
+              ${isWinner ? '<span class="text-xs font-black text-amber-400">🎉 BINGO! VENCEDOR!</span>' : `<span class="text-[11px] text-slate-400">Falta(m) ${item.faltam} dezena(s)</span>`}
+            </div>
+          `;
+        });
+      }
+    }
+
+    // --- MINHAS CARTELAS ---
+    function renderMinhasCartelas() {
+      const container = document.getElementById('minhas-cartelas-grid');
+      container.innerHTML = '';
+      const filtro = document.getElementById('busca-cartela').value.toLowerCase().trim();
+      const sorteadosSet = new Set(appState.dezenasSorteadas);
+
+      const filtradas = appState.cartelas.filter(c => 
+        !filtro || c.jogadorNome.toLowerCase().includes(filtro) || c.jogadorTelefone.includes(filtro) || c.id.toLowerCase().includes(filtro)
+      );
+
+      if (filtradas.length === 0) {
+        container.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-500 text-xs">Nenhuma cartela encontrada.</div>';
+        return;
+      }
+
+      filtradas.forEach(c => {
+        const acertos = c.dezenas.filter(d => sorteadosSet.has(d));
+        let dezenasHtml = '';
+        c.dezenas.forEach(d => {
+          const hit = sorteadosSet.has(d);
+          dezenasHtml += `<span class="px-2 py-1 rounded font-mono font-bold text-xs ${hit ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">${d}</span>`;
+        });
+
+        container.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-center mb-2">
+              <div>
+                <h4 class="font-bold text-white text-sm">${c.jogadorNome}</h4>
+                <span class="text-[11px] text-emerald-400 font-mono">${c.id}</span>
+              </div>
+              <span class="text-sm font-black text-emerald-400">${acertos.length} / 10</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 my-3">${dezenasHtml}</div>
+            <div class="text-[11px] text-slate-400 flex justify-between">
+              <span>${acertos.length === 10 ? '🎉 BINGO!' : `Faltam ${10 - acertos.length} dezenas`}</span>
+              <span class="${c.pago ? 'text-emerald-400' : 'text-amber-400'} font-semibold">${c.pago ? '✓ Pago' : '⏳ Pendente'}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // --- ADMIN ---
+    function autenticarAdmin() {
+      const pin = document.getElementById('admin-pin-input').value;
+      if (pin === appState.config.adminPin) {
+        document.getElementById('admin-login-box').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+        renderAdmin();
+      } else {
+        alert('PIN incorreto! Padrão: 1234');
+      }
+    }
+
+    function renderAdmin() {
+      const tbody = document.getElementById('admin-cartelas-tbody');
+      tbody.innerHTML = '';
+      const sorteadosSet = new Set(appState.dezenasSorteadas);
+
+      appState.cartelas.forEach((c, idx) => {
+        const acertos = c.dezenas.filter(d => sorteadosSet.has(d)).length;
+        tbody.innerHTML += `
+          <tr>
+            <td class="py-2.5 px-3 font-mono font-bold text-emerald-400">${c.id}</td>
+            <td class="py-2.5 px-3 font-semibold text-white">${c.jogadorNome}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-400">${c.jogadorTelefone}</td>
+            <td class="py-2.5 px-3 font-mono text-[11px]">${c.dezenas.join(' ')}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-emerald-400">${acertos}/10</td>
+            <td class="py-2.5 px-3 text-center">
+              <button onclick="togglePago(${idx})" class="px-2 py-0.5 rounded text-[11px] font-bold ${c.pago ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                ${c.pago ? '✓ Pago' : '⏳ Pendente'}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function togglePago(idx) {
+      appState.cartelas[idx].pago = !appState.cartelas[idx].pago;
+      salvarDados();
+      renderAdmin();
+    }
+
+    function registrarDezenaSorteada(numeroBruto, premioLabel) {
+      const dezena = extrairDezena(numeroBruto);
+      if (!dezena) return;
+
+      appState.sorteios.push({
+        numeroBruto,
+        dezenaExtraida: dezena,
+        premioLabel,
+        concurso: 'Federal / Bicho'
+      });
+
+      if (!appState.dezenasSorteadas.includes(dezena)) {
+        appState.dezenasSorteadas.push(dezena);
+      }
+
+      salvarDados();
+
+      // Checa BINGO
+      const ganhador = appState.cartelas.find(c => {
+        const hits = c.dezenas.filter(d => appState.dezenasSorteadas.includes(d));
+        return hits.length === 10;
+      });
+
+      if (ganhador) {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        alert(`🎉 BINGO! Temos um ganhador: ${ganhador.jogadorNome} (${ganhador.id})!`);
+      }
+    }
+
+    function lancarLoteFederal() {
+      for (let i = 1; i <= 5; i++) {
+        const val = document.getElementById(`fed-${i}`).value.trim();
+        if (val) registrarDezenaSorteada(val, `${i}º Prêmio`);
+      }
+      alert('Sorteios da Federal registrados com sucesso!');
+      for (let i = 1; i <= 5; i++) document.getElementById(`fed-${i}`).value = '';
+    }
+
+    function lancarAvulso() {
+      const val = document.getElementById('avulso-input').value.trim();
+      if (!val) return;
+      registrarDezenaSorteada(val, 'Avulso');
+      document.getElementById('avulso-input').value = '';
+      alert(`Dezena registrada!`);
+    }
+
+    function sortearGloboVirtual() {
+      const disponiveis = [];
+      for (let i = 0; i < 100; i++) {
+        const d = formatarDezena(i);
+        if (!appState.dezenasSorteadas.includes(d)) disponiveis.push(d);
+      }
+      if (disponiveis.length === 0) {
+        alert('Todas as dezenas já saíram!');
+        return;
+      }
+      const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+      registrarDezenaSorteada(sorteada, 'Globo Virtual');
+      alert(`🎲 Dezena Virtual Sorteada: ${sorteada}`);
+    }
+
+    function carregarDadosExemplo() {
+      appState.cartelas = [
+        { id: 'JOG-001', jogadorNome: 'Carlos Silva', jogadorTelefone: '(11) 98765-4321', dezenas: ['04','12','19','25','33','45','56','67','80','99'], pago: true },
+        { id: 'JOG-002', jogadorNome: 'Mariana Souza', jogadorTelefone: '(21) 99876-5432', dezenas: ['02','19','28','34','52','61','73','84','90','95'], pago: true },
+        { id: 'JOG-003', jogadorNome: 'Roberto Lima', jogadorTelefone: '(31) 97654-3210', dezenas: ['00','15','22','38','47','52','69','77','88','99'], pago: true }
+      ];
+      appState.sorteios = [];
+      appState.dezenasSorteadas = [];
+      registrarDezenaSorteada('2119', '1º Prêmio');
+      registrarDezenaSorteada('8452', '2º Prêmio');
+      salvarDados();
+      alert('Dados de exemplo carregados!');
+    }
+
+    function reiniciarBolao() {
+      if (confirm('Deseja reiniciar os sorteios?')) {
+        appState.sorteios = [];
+        appState.dezenasSorteadas = [];
+        salvarDados();
+        alert('Rodada reiniciada!');
+      }
+    }
+
+    function atualizarViews() {
+      const premio = appState.cartelas.filter(c => c.pago).length * 10 * 0.9;
+      document.getElementById('home-premio').innerText = `R$ ${premio.toFixed(2).replace('.', ',')}`;
+      document.getElementById('home-cartelas').innerText = appState.cartelas.length;
+      document.getElementById('home-dezenas').innerText = `${appState.dezenasSorteadas.length} / 100`;
+      document.getElementById('telao-premio').innerText = `R$ ${premio.toFixed(2).replace('.', ',')}`;
+    }
+
+    // INICIALIZAÇÃO
+    window.onload = () => {
+      carregarDados();
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
