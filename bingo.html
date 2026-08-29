@@ -1,34 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BolãoBingo - Sorteio de Bingo das Dezenas entre Amigos</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            bingo: {
-              500: '#22c55e',
-              600: '#16a34a',
-            }
-          }
-        }
-      }
-    }
-  </script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
     body {
-      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 50%, #020617 100%);
-      color: #f8fafc;
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+      color: #0f172a;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
@@ -37,25 +25,25 @@
       body { background: white !important; color: black !important; }
       table { border-collapse: collapse !important; width: 100% !important; }
       th, td { border: 1px solid #ccc !important; padding: 6px !important; }
-      .bg-emerald-500 { background-color: #22c55e !important; color: black !important; font-weight: bold !important; }
+      .bg-emerald-500 { background-color: #10b981 !important; color: white !important; font-weight: bold !important; }
     }
   </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white">
+  <!-- NAVBAR SUAVE -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 text-slate-800 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div onclick="navegar('inicio')" class="flex items-center space-x-3 cursor-pointer group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
             <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
           </div>
           <div>
-            <span class="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-emerald-400">
-              Bolão<span class="text-emerald-400">Bingo</span>
+            <span class="font-black text-xl tracking-tight text-slate-900">
+              Bolão<span class="text-emerald-600">Bingo</span>
             </span>
-            <span class="hidden sm:block text-[10px] text-emerald-400/80 font-medium uppercase tracking-wider">
+            <span class="hidden sm:block text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">
               10 Dezenas • Loteria Federal & Bicho
             </span>
           </div>
@@ -73,148 +61,148 @@
 
     <!-- TELA DE LOGIN / CADASTRO OBRIGATÓRIO (QUANDO DESLOGADO) -->
     <section id="view-auth" class="max-w-md mx-auto py-6 sm:py-10">
-      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div class="text-center mb-6">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-green-400 text-slate-950 flex items-center justify-center mx-auto mb-3 shadow-lg font-black">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/20 font-black">
             <i data-lucide="trophy" class="w-8 h-8 text-white"></i>
           </div>
-          <h1 class="text-2xl font-black text-white">Acesse o BolãoBingo</h1>
-          <p class="text-xs text-slate-400 mt-1">Faça login com usuário e senha para apostar e acompanhar o ranking.</p>
+          <h1 class="text-2xl font-black text-slate-900">Acesse o BolãoBingo</h1>
+          <p class="text-xs text-slate-500 mt-1">Faça login com usuário e senha para apostar e acompanhar o ranking.</p>
         </div>
 
-        <div class="grid grid-cols-2 p-1 bg-slate-950 rounded-xl mb-6 border border-slate-800">
-          <button onclick="setAuthTab('login')" id="tab-btn-login" class="py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white">Entrar na Conta</button>
-          <button onclick="setAuthTab('cadastro')" id="tab-btn-cadastro" class="py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Criar Nova Conta</button>
+        <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl mb-6 border border-slate-200">
+          <button onclick="setAuthTab('login')" id="tab-btn-login" class="py-2 text-xs font-bold rounded-xl bg-white text-emerald-700 shadow-sm">Entrar na Conta</button>
+          <button onclick="setAuthTab('cadastro')" id="tab-btn-cadastro" class="py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900">Criar Nova Conta</button>
         </div>
 
-        <div id="auth-error" class="hidden p-3 mb-4 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs"></div>
+        <div id="auth-error" class="hidden p-3 mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"></div>
 
         <!-- Form Login -->
         <div id="form-login" class="space-y-4">
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">Usuário ou Telefone</label>
-            <input type="text" id="login-user" value="admin" placeholder="Ex: admin ou seu usuario" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">Usuário ou Telefone</label>
+            <input type="text" id="login-user" value="admin" placeholder="Ex: admin ou seu usuario" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">Sua Senha</label>
-            <input type="password" id="login-senha" value="1234" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:border-emerald-500 focus:outline-none">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">Sua Senha</label>
+            <input type="password" id="login-senha" value="1234" placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none">
           </div>
-          <button onclick="executarLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 text-white font-black text-sm rounded-xl shadow-lg">Entrar no Sistema</button>
-          <p class="text-center text-[11px] text-slate-500">Admin padrão: usuário <strong class="text-slate-300">admin</strong> / senha <strong class="text-slate-300">1234</strong></p>
+          <button onclick="executarLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-sm rounded-xl shadow-md">Entrar no Sistema</button>
+          <p class="text-center text-[11px] text-slate-500">Admin padrão: usuário <strong class="text-slate-800">admin</strong> / senha <strong class="text-slate-800">1234</strong></p>
         </div>
 
         <!-- Form Cadastro -->
         <div id="form-cadastro" class="hidden space-y-3">
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">Nome Completo *</label>
-            <input type="text" id="cad-nome" placeholder="Ex: Carlos Silva" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">Nome Completo *</label>
+            <input type="text" id="cad-nome" placeholder="Ex: Carlos Silva" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs">
           </div>
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">Nome de Usuário (Login) *</label>
-            <input type="text" id="cad-user" placeholder="Ex: carlossilva" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">Nome de Usuário (Login) *</label>
+            <input type="text" id="cad-user" placeholder="Ex: carlossilva" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs">
           </div>
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">WhatsApp com DDD *</label>
-            <input type="text" id="cad-tel" placeholder="(11) 99999-8888" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">WhatsApp com DDD *</label>
+            <input type="text" id="cad-tel" placeholder="(11) 99999-8888" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs">
           </div>
           <div>
-            <label class="block text-xs text-slate-300 font-medium mb-1">Crie sua Senha *</label>
-            <input type="password" id="cad-senha" placeholder="Mínimo 4 caracteres" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs">
+            <label class="block text-xs text-slate-700 font-semibold mb-1">Crie sua Senha *</label>
+            <input type="password" id="cad-senha" placeholder="Mínimo 4 caracteres" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs">
           </div>
-          <button onclick="executarCadastro()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 text-white font-black text-sm rounded-xl shadow-lg">Criar Minha Conta</button>
+          <button onclick="executarCadastro()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-sm rounded-xl shadow-md">Criar Minha Conta</button>
         </div>
       </div>
     </section>
 
     <!-- TELA 1: HUB / INÍCIO (LOGADO) -->
     <section id="view-inicio" class="hidden space-y-8">
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950/60 border border-slate-800 p-6 sm:p-8 shadow-2xl">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-3">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold backdrop-blur-sm mb-3 border border-white/20">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
               <span id="home-modo-badge">Modalidade: 15 Dezenas (Iniciais, Centrais e Finais)</span>
             </div>
-            <h1 class="text-2xl sm:text-4xl font-black text-white">
-              Olá, <span id="home-user-name" class="text-emerald-400">Amigo</span>! 🍀
+            <h1 class="text-2xl sm:text-4xl font-black">
+              Olá, <span id="home-user-name" class="text-emerald-300">Amigo</span>! 🍀
             </h1>
-            <p class="text-slate-300 text-xs sm:text-sm mt-1">
+            <p class="text-emerald-100 text-xs sm:text-sm mt-1">
               Confira a planilha geral dos jogos e acertos abaixo ou faça mais apostas!
             </p>
 
             <div class="flex flex-wrap items-center gap-3 mt-5">
-              <button onclick="navegar('jogar')" class="px-5 py-3 rounded-xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 text-white shadow-lg flex items-center gap-2">
-                <i data-lucide="ticket" class="w-4 h-4"></i>
+              <button onclick="navegar('jogar')" class="px-5 py-3 rounded-2xl font-black text-xs sm:text-sm bg-white text-emerald-900 hover:bg-emerald-50 shadow-md flex items-center gap-2 transition-all">
+                <i data-lucide="ticket" class="w-4 h-4 text-emerald-700"></i>
                 <span>Fazer Jogos (R$ 10,00 cada)</span>
               </button>
-              <button onclick="navegar('minhas-cartelas')" class="px-5 py-3 rounded-xl font-bold text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 flex items-center gap-2">
-                <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+              <button onclick="navegar('minhas-cartelas')" class="px-5 py-3 rounded-2xl font-bold text-xs sm:text-sm bg-emerald-950/60 hover:bg-emerald-950/80 text-white border border-emerald-700/50 flex items-center gap-2 transition-all">
+                <i data-lucide="search" class="w-4 h-4 text-emerald-300"></i>
                 <span>Ver Minhas Apostas</span>
               </button>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 min-w-[280px]">
-            <div class="bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800">
-              <span class="text-[11px] text-slate-400 block font-medium">Prêmio Acumulado</span>
-              <span id="home-premio" class="text-xl sm:text-2xl font-black text-emerald-400">R$ 0,00</span>
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15">
+              <span class="text-[11px] text-emerald-200 block font-medium">Prêmio Acumulado</span>
+              <span id="home-premio" class="text-xl sm:text-2xl font-black text-emerald-300">R$ 0,00</span>
             </div>
-            <div class="bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800">
-              <span class="text-[11px] text-slate-400 block font-medium">Dezenas Sorteadas</span>
-              <span id="home-dezenas" class="text-xl sm:text-2xl font-black text-amber-400">0 / 100</span>
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15">
+              <span class="text-[11px] text-emerald-200 block font-medium">Dezenas Sorteadas</span>
+              <span id="home-dezenas" class="text-xl sm:text-2xl font-black text-amber-300">0 / 100</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Destaque Última Extração -->
-      <div id="home-ultimo-sorteio" class="hidden bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-emerald-500/20 border-2 border-amber-400/80 rounded-2xl p-4 sm:p-5 text-center flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div id="home-ultimo-sorteio" class="hidden bg-gradient-to-r from-amber-50 via-yellow-50 to-emerald-50 border border-amber-300 rounded-2xl p-4 sm:p-5 text-center flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
         <div class="text-left">
-          <span class="text-xs font-bold text-amber-300 uppercase tracking-wider block">Última Extração Registrada</span>
-          <div id="home-ultimo-label" class="text-base font-bold text-white">Sorteio Oficial</div>
+          <span class="text-xs font-bold text-amber-800 uppercase tracking-wider block">Última Extração Registrada</span>
+          <div id="home-ultimo-label" class="text-base font-bold text-slate-800">Sorteio Oficial</div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-300 font-semibold">Dezenas Geradas:</span>
+          <span class="text-xs text-slate-600 font-semibold">Dezenas Geradas:</span>
           <div id="home-ultimas-dezenas" class="flex gap-1.5 font-mono font-black text-lg"></div>
         </div>
       </div>
 
       <!-- Painel 100 Dezenas -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
-        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
-          <h3 class="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+          <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
             <span>Painel das 100 Dezenas</span>
-            <span id="home-contador-dezenas" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">0 / 100</span>
+            <span id="home-contador-dezenas" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">0 / 100</span>
           </h3>
         </div>
         <div id="grade-100-home" class="grid grid-cols-10 gap-1 sm:gap-2"></div>
       </div>
 
       <!-- PLANILHA GERAL DE JOGADORES, DEZENAS E ACERTOS -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
-            <h2 class="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-              <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-400"></i>
+            <h2 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-700"></i>
               <span>Planilha Geral de Jogadores & Acertos</span>
             </h2>
-            <p class="text-xs text-slate-400">Listagem de todos os participantes com as 10 dezenas e conferência de acertos.</p>
+            <p class="text-xs text-slate-500">Listagem de todos os participantes com as 10 dezenas e conferência de acertos.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button onclick="compartilharPlanilhaZap()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+            <button onclick="compartilharPlanilhaZap()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
               <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
               <span>Compartilhar no WhatsApp</span>
             </button>
-            <button onclick="window.print()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5">
+            <button onclick="window.print()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5">
               <i data-lucide="printer" class="w-3.5 h-3.5"></i>
               <span>Imprimir / PDF</span>
             </button>
           </div>
         </div>
 
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-left text-xs text-slate-200 border-collapse">
-            <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+        <div class="overflow-x-auto rounded-2xl border border-slate-200">
+          <table class="w-full text-left text-xs text-slate-700 border-collapse">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200 font-bold">
               <tr>
                 <th class="py-3 px-3.5 text-center w-12">Pos.</th>
                 <th class="py-3 px-3.5">Participante</th>
@@ -224,7 +212,7 @@
                 <th class="py-3 px-3.5 text-center w-28">Status</th>
               </tr>
             </thead>
-            <tbody id="home-planilha-tbody" class="divide-y divide-slate-800/80 bg-slate-900/60"></tbody>
+            <tbody id="home-planilha-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
           </table>
         </div>
       </div>
@@ -233,33 +221,33 @@
     <!-- TELA 2: JOGAR -->
     <section id="view-jogar" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="text-center">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30 mb-2">
-          <i data-lucide="ticket" class="w-4 h-4"></i>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 mb-2">
+          <i data-lucide="ticket" class="w-4 h-4 text-emerald-700"></i>
           <span>Faça sua Aposta • R$ 10,00 por Jogo</span>
         </div>
-        <h1 class="text-2xl sm:text-4xl font-black text-white">Escolha suas 10 Dezenas</h1>
+        <h1 class="text-2xl sm:text-4xl font-black text-slate-900">Escolha suas 10 Dezenas</h1>
       </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-          <h2 class="text-base font-bold text-white flex items-center gap-2">
-            <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4 text-emerald-700"></i>
             <span>Participante</span>
           </h2>
           <div id="admin-user-selector-container" class="hidden flex items-center gap-2 text-xs">
-            <span class="text-slate-300 font-semibold">Lançar para:</span>
-            <select id="admin-user-select" onchange="selecionarUsuarioAdmin(this.value)" class="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-white font-medium focus:border-emerald-500 focus:outline-none"></select>
+            <span class="text-slate-600 font-semibold">Lançar para:</span>
+            <select id="admin-user-select" onchange="selecionarUsuarioAdmin(this.value)" class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:outline-none"></select>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1.5">Nome do Participante *</label>
-            <input type="text" id="jogador-nome" class="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-emerald-500 focus:outline-none">
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nome do Participante *</label>
+            <input type="text" id="jogador-nome" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:bg-white">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1.5">WhatsApp *</label>
-            <input type="text" id="jogador-tel" class="w-full px-3.5 py-2.5 text-sm bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-emerald-500 focus:outline-none">
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">WhatsApp *</label>
+            <input type="text" id="jogador-tel" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:bg-white">
           </div>
         </div>
       </div>
@@ -267,21 +255,21 @@
       <div id="jogos-container" class="space-y-6"></div>
 
       <div class="text-center">
-        <button onclick="adicionarNovoJogo()" class="px-6 py-3 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 inline-flex items-center gap-2">
+        <button onclick="adicionarNovoJogo()" class="px-6 py-3 rounded-2xl text-sm font-bold bg-white hover:bg-slate-50 text-emerald-700 border border-emerald-300 shadow-sm inline-flex items-center gap-2">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Adicionar Mais um Jogo (+ R$ 10,00)</span>
         </button>
       </div>
 
-      <div class="sticky bottom-4 z-40 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="sticky bottom-4 z-40 bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <span class="text-xs text-slate-400 block font-medium">Resumo do Pedido</span>
+          <span class="text-xs text-slate-500 block font-medium">Resumo do Pedido</span>
           <div class="flex items-baseline gap-2">
-            <span id="checkout-total" class="text-2xl sm:text-3xl font-black text-emerald-400">R$ 10,00</span>
-            <span id="checkout-qtd" class="text-xs text-slate-400">(1 jogo)</span>
+            <span id="checkout-total" class="text-2xl sm:text-3xl font-black text-emerald-700">R$ 10,00</span>
+            <span id="checkout-qtd" class="text-xs text-slate-500 font-medium">(1 jogo)</span>
           </div>
         </div>
-        <button onclick="finalizarPedido()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-black text-sm bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 text-white shadow-lg flex items-center justify-center gap-2">
+        <button onclick="finalizarPedido()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white shadow-sm flex items-center justify-center gap-2">
           <span>Confirmar Jogos</span>
           <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
@@ -292,17 +280,17 @@
     <section id="view-minhas-cartelas" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-black text-white">Suas Cartelas no Bolão</h1>
-          <p class="text-xs text-slate-400">Acompanhe os acertos dos seus jogos em tempo real.</p>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900">Suas Cartelas no Bolão</h1>
+          <p class="text-xs text-slate-500">Acompanhe os acertos dos seus jogos em tempo real.</p>
         </div>
-        <button onclick="navegar('jogar')" class="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5">
+        <button onclick="navegar('jogar')" class="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>Fazer Mais Jogos</span>
         </button>
       </div>
 
       <div class="max-w-xl mx-auto">
-        <input type="text" id="busca-cartela" oninput="renderMinhasCartelas()" placeholder="Filtrar cartelas..." class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs sm:text-sm">
+        <input type="text" id="busca-cartela" oninput="renderMinhasCartelas()" placeholder="Filtrar cartelas..." class="w-full px-4 py-3 bg-white border border-slate-300 rounded-2xl text-slate-900 text-xs sm:text-sm shadow-sm">
       </div>
 
       <div id="minhas-cartelas-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -310,24 +298,24 @@
 
     <!-- TELA 4: ADMIN -->
     <section id="view-admin" class="hidden space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm">
         <div>
-          <h1 class="text-2xl font-black text-white flex items-center gap-2">
+          <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
             <span>Painel do Organizador</span>
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Admin Master</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Admin Master</span>
           </h1>
-          <p class="text-xs text-slate-400">Lançamento de milhares da Federal, gestão de usuários e senhas</p>
+          <p class="text-xs text-slate-500">Lançamento de milhares da Federal, gestão de usuários e senhas</p>
         </div>
         <div class="flex gap-2">
-          <button onclick="compartilharPlanilhaZap()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1">
+          <button onclick="compartilharPlanilhaZap()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1 shadow-sm">
             <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
             <span>Compartilhar Planilha</span>
           </button>
-          <button onclick="carregarDadosExemplo()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Exemplo</span>
+          <button onclick="carregarDadosExemplo()" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 flex items-center gap-1 shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>12 Jogos Pagos</span>
           </button>
-          <button onclick="reiniciarBolao()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30 flex items-center gap-1">
+          <button onclick="reiniciarBolao()" class="px-3 py-2 rounded-xl text-xs font-bold bg-red-50 text-red-600 border border-red-200 flex items-center gap-1">
             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
             <span>Reiniciar</span>
           </button>
@@ -335,76 +323,76 @@
       </div>
 
       <!-- Configuração do Modo 15 Dezenas -->
-      <div class="bg-slate-900 border-2 border-emerald-500/40 rounded-2xl p-5 shadow-xl space-y-3">
-        <h3 class="font-extrabold text-white text-base">Modalidade de Extração das Milhares:</h3>
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm space-y-3">
+        <h3 class="font-extrabold text-slate-900 text-base">Modalidade de Extração das Milhares:</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label class="p-3 rounded-xl border border-emerald-500 bg-emerald-500/10 text-white flex items-start gap-2.5 cursor-pointer">
+          <label class="p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 flex items-start gap-2.5 cursor-pointer shadow-sm">
             <input type="radio" name="modoExtracaoHtml" id="radio-15" checked onchange="trocarModoExtracao('15_dezenas')" class="mt-0.5">
             <div>
-              <span class="font-bold block text-emerald-400">Modo 15 Dezenas (Iniciais, Centrais e Finais)</span>
-              <span class="text-[11px] text-slate-300 block">Ex: Milhar 2119 ➔ Dezenas 21 (inicial), 11 (central) e 19 (final).</span>
+              <span class="font-bold block text-emerald-800">Modo 15 Dezenas (Iniciais, Centrais e Finais)</span>
+              <span class="text-[11px] text-slate-600 block">Ex: Milhar 2119 ➔ Dezenas 21 (inicial), 11 (central) e 19 (final).</span>
             </div>
           </label>
-          <label class="p-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 flex items-start gap-2.5 cursor-pointer">
+          <label class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 flex items-start gap-2.5 cursor-pointer">
             <input type="radio" name="modoExtracaoHtml" id="radio-final" onchange="trocarModoExtracao('final')" class="mt-0.5">
             <div>
-              <span class="font-bold block text-white">Modo Dezena Final</span>
-              <span class="text-[11px] text-slate-400 block">Ex: Milhar 2119 ➔ Apenas a dezena 19.</span>
+              <span class="font-bold block text-slate-900">Modo Dezena Final</span>
+              <span class="text-[11px] text-slate-600 block">Ex: Milhar 2119 ➔ Apenas a dezena 19.</span>
             </div>
           </label>
         </div>
       </div>
 
       <!-- Lançamento Federal 1º ao 5º -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h3 class="font-extrabold text-white text-base mb-1 flex items-center gap-2">
-          <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm">
+        <h3 class="font-extrabold text-slate-900 text-base mb-1 flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4 text-emerald-700"></i>
           <span>Lançar Extração Completa da Federal (1º ao 5º Prêmio)</span>
         </h3>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
           <div>
-            <span class="text-xs text-slate-400 block mb-1">1º Prêmio</span>
-            <input type="text" id="fed-1" placeholder="Ex: 2119" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            <span class="text-xs text-slate-600 font-semibold block mb-1">1º Prêmio</span>
+            <input type="text" id="fed-1" placeholder="Ex: 2119" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white">
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">2º Prêmio</span>
-            <input type="text" id="fed-2" placeholder="Ex: 8452" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            <span class="text-xs text-slate-600 font-semibold block mb-1">2º Prêmio</span>
+            <input type="text" id="fed-2" placeholder="Ex: 8452" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white">
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">3º Prêmio</span>
-            <input type="text" id="fed-3" placeholder="Ex: 0304" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            <span class="text-xs text-slate-600 font-semibold block mb-1">3º Prêmio</span>
+            <input type="text" id="fed-3" placeholder="Ex: 0304" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white">
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">4º Prêmio</span>
-            <input type="text" id="fed-4" placeholder="Ex: 7890" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            <span class="text-xs text-slate-600 font-semibold block mb-1">4º Prêmio</span>
+            <input type="text" id="fed-4" placeholder="Ex: 7890" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white">
           </div>
           <div>
-            <span class="text-xs text-slate-400 block mb-1">5º Prêmio</span>
-            <input type="text" id="fed-5" placeholder="Ex: 4533" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white">
+            <span class="text-xs text-slate-600 font-semibold block mb-1">5º Prêmio</span>
+            <input type="text" id="fed-5" placeholder="Ex: 4533" class="w-full text-center font-mono font-bold px-2 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white">
           </div>
         </div>
-        <button onclick="lancarLoteFederal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md">
+        <button onclick="lancarLoteFederal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-sm">
           Lançar Prêmios da Federal
         </button>
       </div>
 
       <!-- Importar Lista de Jogos em Texto -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-        <h3 class="font-extrabold text-white text-base">Colar / Importar Lista de Jogos (Todos Pagos)</h3>
-        <p class="text-xs text-slate-400">Cole abaixo os participantes e suas 10 dezenas (1 por linha):</p>
-        <textarea id="import-txt-area" rows="6" class="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl font-mono text-xs text-white" placeholder="Carlos Silva: 04 11 19 21 33 45 56 67 80 99"></textarea>
-        <button onclick="importarListaTexto()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs">Importar Jogos Pagos</button>
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm space-y-3">
+        <h3 class="font-extrabold text-slate-900 text-base">Colar / Importar Lista de Jogos (Todos Pagos)</h3>
+        <p class="text-xs text-slate-500">Cole abaixo os participantes e suas 10 dezenas (1 por linha):</p>
+        <textarea id="import-txt-area" rows="6" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-2xl font-mono text-xs text-slate-900" placeholder="Carlos Silva: 04 11 19 21 33 45 56 67 80 99"></textarea>
+        <button onclick="importarListaTexto()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-sm">Importar Jogos Pagos</button>
       </div>
 
       <!-- Gestão de Usuários e Senhas -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm">
         <div class="flex justify-between items-center mb-3">
-          <h3 class="font-extrabold text-white text-base">Participantes & Senhas</h3>
-          <button onclick="abrirNovoUserPrompt()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg">+ Novo Usuário</button>
+          <h3 class="font-extrabold text-slate-900 text-base">Participantes & Senhas</h3>
+          <button onclick="abrirNovoUserPrompt()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm">+ Novo Usuário</button>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+        <div class="overflow-x-auto rounded-2xl border border-slate-200">
+          <table class="w-full text-left text-xs text-slate-700 border-collapse">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] border-b border-slate-200 font-bold">
               <tr>
                 <th class="py-2.5 px-3">Nome</th>
                 <th class="py-2.5 px-3">Usuário</th>
@@ -412,7 +400,7 @@
                 <th class="py-2.5 px-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody id="admin-users-tbody" class="divide-y divide-slate-800"></tbody>
+            <tbody id="admin-users-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
           </table>
         </div>
       </div>
@@ -519,13 +507,13 @@
       if (tab === 'login') {
         document.getElementById('form-login').classList.remove('hidden');
         document.getElementById('form-cadastro').classList.add('hidden');
-        document.getElementById('tab-btn-login').className = 'py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white';
-        document.getElementById('tab-btn-cadastro').className = 'py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white';
+        document.getElementById('tab-btn-login').className = 'py-2 text-xs font-bold rounded-xl bg-white text-emerald-700 shadow-sm';
+        document.getElementById('tab-btn-cadastro').className = 'py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900';
       } else {
         document.getElementById('form-login').classList.add('hidden');
         document.getElementById('form-cadastro').classList.remove('hidden');
-        document.getElementById('tab-btn-cadastro').className = 'py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white';
-        document.getElementById('tab-btn-login').className = 'py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white';
+        document.getElementById('tab-btn-cadastro').className = 'py-2 text-xs font-bold rounded-xl bg-white text-emerald-700 shadow-sm';
+        document.getElementById('tab-btn-login').className = 'py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900';
       }
     }
 
@@ -602,17 +590,17 @@
       const nav = document.getElementById('navbar-links');
       if (!currentUser) {
         nav.innerHTML = `
-          <button onclick="navegar('auth')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-emerald-400 border border-emerald-500/30">Entrar / Cadastrar</button>
+          <button onclick="navegar('auth')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm">Entrar / Cadastrar</button>
         `;
       } else {
         nav.innerHTML = `
-          <button onclick="navegar('inicio')" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white">Início</button>
-          <button onclick="navegar('jogar')" class="px-3 py-1.5 text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg">Fazer Jogos (R$ 10)</button>
-          <button onclick="navegar('minhas-cartelas')" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white">Minhas Cartelas</button>
-          ${currentUser.role === 'admin' ? `<button onclick="navegar('admin')" class="px-3 py-1.5 text-xs font-semibold text-amber-300">Organizador</button>` : ''}
-          <div class="pl-2 border-l border-slate-800 flex items-center gap-2">
-            <span class="text-xs font-bold text-white hidden sm:inline">${currentUser.nome}</span>
-            <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-400 rounded" title="Sair"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+          <button onclick="navegar('inicio')" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900">Início</button>
+          <button onclick="navegar('jogar')" class="px-3.5 py-1.5 text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl shadow-sm">Fazer Jogos (R$ 10)</button>
+          <button onclick="navegar('minhas-cartelas')" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900">Minhas Cartelas</button>
+          ${currentUser.role === 'admin' ? `<button onclick="navegar('admin')" class="px-3 py-1.5 text-xs font-bold text-amber-700 hover:bg-amber-50 rounded-xl">Organizador</button>` : ''}
+          <div class="pl-2 border-l border-slate-200 flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-800 hidden sm:inline">${currentUser.nome}</span>
+            <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50" title="Sair"><i data-lucide="log-out" class="w-4 h-4"></i></button>
           </div>
         `;
       }
@@ -637,9 +625,9 @@
         const isLast = ultimo && ultimo.dezenasExtraidas.includes(d);
 
         grid.innerHTML += `
-          <div class="h-8 sm:h-10 rounded-lg flex items-center justify-center font-bold text-xs sm:text-base ${
-            isLast ? 'bg-amber-400 text-slate-950 ring-2 ring-amber-300' :
-            isSorted ? 'bg-emerald-500 text-slate-950 font-black shadow-md' : 'bg-slate-800 text-slate-400 border border-slate-700'
+          <div class="h-8 sm:h-10 rounded-xl flex items-center justify-center font-bold text-xs sm:text-base transition-all ${
+            isLast ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-300 font-black shadow-md' :
+            isSorted ? 'bg-emerald-500 text-white font-black shadow-sm' : 'bg-slate-100 text-slate-600 border border-slate-200'
           }">${d}</div>
         `;
       }
@@ -647,14 +635,14 @@
       if (ultimo) {
         document.getElementById('home-ultimo-sorteio').classList.remove('hidden');
         document.getElementById('home-ultimo-label').innerText = `${ultimo.premioLabel || 'Prêmio'} (Milhar: ${ultimo.numeroBruto})`;
-        document.getElementById('home-ultimas-dezenas').innerHTML = ultimo.dezenasExtraidas.map(d => `<span class="px-2.5 py-1 bg-amber-400 text-slate-950 rounded-lg font-bold">${d}</span>`).join('');
+        document.getElementById('home-ultimas-dezenas').innerHTML = ultimo.dezenasExtraidas.map(d => `<span class="px-2.5 py-1 bg-amber-400 text-slate-950 rounded-lg font-bold shadow-sm">${d}</span>`).join('');
       } else {
         document.getElementById('home-ultimo-sorteio').classList.add('hidden');
       }
 
       document.getElementById('home-contador-dezenas').innerText = `${appState.dezenasSorteadas.length} / 100`;
 
-      // PLANILHA GERAL DE JOGADORES (ESTILO PDF)
+      // PLANILHA GERAL DE JOGADORES
       const tbody = document.getElementById('home-planilha-tbody');
       tbody.innerHTML = '';
 
@@ -664,24 +652,24 @@
       }).sort((a,b) => b.totalAcertos - a.totalAcertos);
 
       if (ranking.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500 text-xs">Nenhum jogador cadastrado no momento.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-400 text-xs">Nenhum jogador cadastrado no momento.</td></tr>';
       } else {
         ranking.forEach((item, idx) => {
           const isWinner = item.totalAcertos === 10;
           let dezenasBadges = '';
           item.dezenas.forEach(d => {
             const hit = sorteadosSet.has(d);
-            dezenasBadges += `<span class="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-black ${hit ? 'bg-emerald-500 text-slate-950 ring-1 ring-emerald-300' : 'bg-slate-800 text-slate-300 border border-slate-700'}">${d}</span>`;
+            dezenasBadges += `<span class="inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-black ${hit ? 'bg-emerald-500 text-white shadow-sm ring-1 ring-emerald-300' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${d}</span>`;
           });
 
           tbody.innerHTML += `
-            <tr class="${isWinner ? 'bg-amber-500/15 font-bold' : ''}">
-              <td class="py-3 px-3.5 text-center font-bold text-slate-400">${idx + 1}º</td>
-              <td class="py-3 px-3.5 font-bold text-white">${item.jogadorNome} <span class="text-[11px] text-emerald-400 font-mono block">${item.id}</span></td>
-              <td class="py-3 px-3.5 font-mono text-slate-400">${item.jogadorTelefone}</td>
+            <tr class="${isWinner ? 'bg-amber-50 font-bold' : 'hover:bg-slate-50/80'}">
+              <td class="py-3 px-3.5 text-center font-bold text-slate-500">${idx + 1}º</td>
+              <td class="py-3 px-3.5 font-bold text-slate-900">${item.jogadorNome} <span class="text-[11px] text-emerald-700 font-mono block">${item.id}</span></td>
+              <td class="py-3 px-3.5 font-mono text-slate-500">${item.jogadorTelefone}</td>
               <td class="py-3 px-3.5 text-center"><div class="flex flex-wrap justify-center gap-1">${dezenasBadges}</div></td>
-              <td class="py-3 px-3.5 text-center"><span class="text-base font-black text-emerald-400 font-mono">${item.totalAcertos}</span> <span class="text-slate-500 text-xs">/ 10</span></td>
-              <td class="py-3 px-3.5 text-center">${isWinner ? '<span class="px-2 py-0.5 bg-amber-400 text-slate-950 font-black rounded-full text-xs">🎉 BINGO!</span>' : `<span class="text-xs text-slate-400">Falta(m) ${item.faltam}</span>`}</td>
+              <td class="py-3 px-3.5 text-center"><span class="text-base font-black text-emerald-600 font-mono">${item.totalAcertos}</span> <span class="text-slate-400 text-xs">/ 10</span></td>
+              <td class="py-3 px-3.5 text-center">${isWinner ? '<span class="px-2.5 py-1 bg-amber-400 text-slate-950 font-black rounded-full text-xs shadow-sm">🎉 BINGO!</span>' : `<span class="text-xs text-slate-500">Falta(m) ${item.faltam}</span>`}</td>
             </tr>
           `;
         });
@@ -742,7 +730,7 @@
 
       jogosAtuais.forEach((dezenas, index) => {
         const div = document.createElement('div');
-        div.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl';
+        div.className = 'bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm';
 
         let gridHtml = '';
         for (let i = 0; i < 100; i++) {
@@ -750,22 +738,22 @@
           const sel = dezenas.includes(d);
           const dis = !sel && dezenas.length >= 10;
           gridHtml += `
-            <button type="button" onclick="toggleDezena(${index}, '${d}')" class="h-7 sm:h-9 text-xs sm:text-sm font-bold rounded-lg ${
-              sel ? 'bg-emerald-500 text-slate-950 font-black scale-105' :
-              dis ? 'bg-slate-800/40 text-slate-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+            <button type="button" onclick="toggleDezena(${index}, '${d}')" class="h-7 sm:h-9 text-xs sm:text-sm font-bold rounded-xl ${
+              sel ? 'bg-emerald-600 text-white font-black scale-105 shadow-sm' :
+              dis ? 'bg-slate-50 text-slate-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
             }">${d}</button>
           `;
         }
 
         div.innerHTML = `
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-            <h3 class="font-bold text-white flex items-center gap-2">
-              <span class="w-7 h-7 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">#${index + 1}</span>
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <h3 class="font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-xs">#${index + 1}</span>
               Jogo ${index + 1} (${dezenas.length}/10)
             </h3>
             <div class="flex gap-2">
-              <button onclick="surpresinhaJogo(${index})" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-xs font-bold">Surpresinha</button>
-              ${jogosAtuais.length > 1 ? `<button onclick="removerJogo(${index})" class="text-xs text-red-400">Excluir</button>` : ''}
+              <button onclick="surpresinhaJogo(${index})" class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold">Surpresinha</button>
+              ${jogosAtuais.length > 1 ? `<button onclick="removerJogo(${index})" class="text-xs text-red-600 px-2 py-1">Excluir</button>` : ''}
             </div>
           </div>
           <div class="grid grid-cols-10 gap-1 sm:gap-1.5">${gridHtml}</div>
@@ -851,7 +839,7 @@
       });
 
       if (filtradas.length === 0) {
-        container.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-500 text-xs">Nenhuma cartela encontrada.</div>';
+        container.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-400 text-xs">Nenhuma cartela encontrada.</div>';
         return;
       }
 
@@ -860,22 +848,22 @@
         let dezenasHtml = '';
         c.dezenas.forEach(d => {
           const hit = sorteadosSet.has(d);
-          dezenasHtml += `<span class="px-2 py-1 rounded font-mono font-bold text-xs ${hit ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">${d}</span>`;
+          dezenasHtml += `<span class="px-2 py-1 rounded-md font-mono font-bold text-xs ${hit ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${d}</span>`;
         });
 
         container.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
             <div class="flex justify-between items-center mb-2">
               <div>
-                <h4 class="font-bold text-white text-sm">${c.jogadorNome}</h4>
-                <span class="text-[11px] text-emerald-400 font-mono">${c.id}</span>
+                <h4 class="font-bold text-slate-900 text-sm">${c.jogadorNome}</h4>
+                <span class="text-[11px] text-emerald-700 font-mono font-semibold">${c.id}</span>
               </div>
-              <span class="text-sm font-black text-emerald-400">${acertos.length} / 10</span>
+              <span class="text-sm font-black text-emerald-600">${acertos.length} / 10</span>
             </div>
             <div class="flex flex-wrap gap-1.5 my-3">${dezenasHtml}</div>
-            <div class="text-[11px] text-slate-400 flex justify-between">
+            <div class="text-[11px] text-slate-500 flex justify-between">
               <span>${acertos.length === 10 ? '🎉 BINGO!' : `Faltam ${10 - acertos.length} dezenas`}</span>
-              <span class="text-emerald-400 font-semibold">✓ Confirmado (Pago)</span>
+              <span class="text-emerald-700 font-semibold">✓ Confirmado (Pago)</span>
             </div>
           </div>
         `;
@@ -891,12 +879,12 @@
 
       const tbody = document.getElementById('admin-users-tbody');
       tbody.innerHTML = appState.users.map(u => `
-        <tr>
-          <td class="py-2 px-3 font-semibold text-white">${u.nome}</td>
-          <td class="py-2 px-3 font-mono text-emerald-400">${u.username}</td>
-          <td class="py-2 px-3 font-mono text-slate-400">${u.telefone}</td>
-          <td class="py-2 px-3 text-right">
-            <button onclick="resetarSenhaUser('${u.id}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded text-xs">Resetar Senha</button>
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 font-semibold text-slate-900">${u.nome}</td>
+          <td class="py-2.5 px-3 font-mono text-emerald-700">${u.username}</td>
+          <td class="py-2.5 px-3 font-mono text-slate-500">${u.telefone}</td>
+          <td class="py-2.5 px-3 text-right">
+            <button onclick="resetarSenhaUser('${u.id}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-semibold">Resetar Senha</button>
           </td>
         </tr>
       `).join('');
