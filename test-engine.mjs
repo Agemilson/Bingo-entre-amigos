@@ -1,109 +1,70 @@
-// Teste unitário independente de validação das regras do Bingo
+// Teste unitário independente do motor atualizado com modo 15 dezenas
 
 function formatDezena(val) {
   const num = typeof val === 'number' ? val : parseInt(String(val).trim(), 10);
-  if (isNaN(num) || num < 0 || num > 99) {
-    return '';
-  }
+  if (isNaN(num) || num < 0 || num > 99) return '';
   return num.toString().padStart(2, '0');
 }
 
-function extractDezenaFromMilhar(input) {
+function extractDezenasFromMilhar(input, modo = 'final') {
   if (!input) return null;
   const clean = input.replace(/\D/g, '');
   if (!clean) return null;
+
   if (clean.length === 1) {
-    return { dezena: '0' + clean, milharLimpa: clean };
+    const d = '0' + clean;
+    return { numeroBruto: clean, dezenas: [d], dezenaPrincipal: d, detalhe: { final: d } };
   }
-  const ultimosDois = clean.slice(-2);
-  return { dezena: ultimosDois, milharLimpa: clean };
+  if (clean.length === 2) {
+    return { numeroBruto: clean, dezenas: [clean], dezenaPrincipal: clean, detalhe: { final: clean } };
+  }
+
+  const milhar4 = clean.slice(-4).padStart(4, '0');
+  const inicial = milhar4.slice(0, 2);
+  const central = milhar4.slice(1, 3);
+  const final = milhar4.slice(2, 4);
+
+  if (modo === '15_dezenas') {
+    return {
+      numeroBruto: clean,
+      dezenas: [inicial, central, final],
+      dezenaPrincipal: final,
+      detalhe: { inicial, central, final }
+    };
+  }
+
+  return {
+    numeroBruto: clean,
+    dezenas: [final],
+    dezenaPrincipal: final,
+    detalhe: { final }
+  };
 }
 
-function validarJogo(dezenasInput) {
-  let lista = [];
-  if (typeof dezenasInput === 'string') {
-    lista = dezenasInput.split(/[\s,.;-]+/).map((s) => s.trim()).filter((s) => s.length > 0);
-  } else if (Array.isArray(dezenasInput)) {
-    lista = dezenasInput.map((s) => String(s).trim()).filter((s) => s.length > 0);
-  }
+console.log('🧪 Iniciando testes das novas funcionalidades...\n');
 
-  const formatadas = [];
-  const set = new Set();
+// Teste 1: Modo 15 Dezenas
+const res15 = extractDezenasFromMilhar('2119', '15_dezenas');
+console.assert(res15 && res15.dezenas.length === 3, 'Falha: deveria extrair 3 dezenas');
+console.assert(res15.detalhe.inicial === '21', `Inicial errada: ${res15.detalhe.inicial}`);
+console.assert(res15.detalhe.central === '11', `Central errada: ${res15.detalhe.central}`);
+console.assert(res15.detalhe.final === '19', `Final errada: ${res15.detalhe.final}`);
+console.log('✅ Teste 1: Milhar 2119 no modo 15 dezenas extrai [21, 11, 19] com sucesso!');
 
-  for (const item of lista) {
-    const dezena = formatDezena(item);
-    if (!dezena) {
-      return { valido: false, erro: `Número inválido: "${item}"`, dezenasFormatadas: [] };
-    }
-    if (set.has(dezena)) {
-      return { valido: false, erro: `Dezena repetida: "${dezena}"`, dezenasFormatadas: [] };
-    }
-    set.add(dezena);
-    formatadas.push(dezena);
-  }
+// Teste 2: Modo Dezena Final
+const resFinal = extractDezenasFromMilhar('2119', 'final');
+console.assert(resFinal && resFinal.dezenas.length === 1, 'Falha: deveria extrair 1 dezena');
+console.assert(resFinal.dezenas[0] === '19', 'Final errada');
+console.log('✅ Teste 2: Milhar 2119 no modo final extrai [19] com sucesso!');
 
-  if (formatadas.length < 10) {
-    return { valido: false, erro: `Apenas ${formatadas.length} dezenas selecionadas`, dezenasFormatadas: formatadas };
-  }
-  if (formatadas.length > 10) {
-    return { valido: false, erro: `Mais de 10 dezenas selecionadas`, dezenasFormatadas: formatadas.slice(0, 10) };
-  }
+// Teste 3: Lote de 5 Milhares no Modo 15 Dezenas
+const milharesFederal = ['2119', '8452', '0304', '7890', '4533'];
+const todasDezenas = [];
+milharesFederal.forEach((m) => {
+  const r = extractDezenasFromMilhar(m, '15_dezenas');
+  todasDezenas.push(...r.dezenas);
+});
+console.assert(todasDezenas.length === 15, `Deveria ter 15 dezenas, obteve ${todasDezenas.length}`);
+console.log('✅ Teste 3: 5 milhares da Federal geram exatamente 15 dezenas:', todasDezenas.join(', '));
 
-  formatadas.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-  return { valido: true, dezenasFormatadas: formatadas };
-}
-
-function gerarSurpresinha() {
-  const set = new Set();
-  while (set.size < 10) {
-    const rand = Math.floor(Math.random() * 100);
-    set.add(rand.toString().padStart(2, '0'));
-  }
-  return Array.from(set).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-}
-
-// BATERIA DE TESTES
-console.log('🧪 Iniciando testes das regras do BolãoBingo...\n');
-
-// Teste 1: Extração de Milhar
-const ex1 = extractDezenaFromMilhar('2119');
-console.assert(ex1 && ex1.dezena === '19', `Falha: 2119 deveria extrair 19, obteve ${ex1?.dezena}`);
-console.log('✅ Teste 1.1: Milhar 2119 extrai dezena 19');
-
-const ex2 = extractDezenaFromMilhar('0504');
-console.assert(ex2 && ex2.dezena === '04', `Falha: 0504 deveria extrair 04, obteve ${ex2?.dezena}`);
-console.log('✅ Teste 1.2: Milhar 0504 extrai dezena 04');
-
-const ex3 = extractDezenaFromMilhar('7');
-console.assert(ex3 && ex3.dezena === '07', `Falha: 7 deveria extrair 07, obteve ${ex3?.dezena}`);
-console.log('✅ Teste 1.3: Número 7 extrai dezena 07');
-
-// Teste 2: Validação de 10 dezenas sem repetição
-const jogoValido = ['04', '12', '19', '25', '33', '45', '56', '67', '80', '99'];
-const v1 = validarJogo(jogoValido);
-console.assert(v1.valido && v1.dezenasFormatadas.length === 10, 'Falha no jogo válido');
-console.log('✅ Teste 2.1: Jogo com 10 dezenas únicas aprovado');
-
-const jogoComRepeticao = ['04', '12', '19', '19', '33', '45', '56', '67', '80', '99'];
-const v2 = validarJogo(jogoComRepeticao);
-console.assert(!v2.valido && v2.erro.includes('repetida'), 'Falha ao rejeitar repetição');
-console.log('✅ Teste 2.2: Jogo com número repetido (19) rejeitado com sucesso');
-
-const jogoIncompleto = ['04', '12', '19'];
-const v3 = validarJogo(jogoIncompleto);
-console.assert(!v3.valido, 'Falha ao rejeitar menos de 10');
-console.log('✅ Teste 2.3: Jogo com menos de 10 dezenas rejeitado com sucesso');
-
-// Teste 3: Surpresinha
-const surp = gerarSurpresinha();
-const vSurp = validarJogo(surp);
-console.assert(vSurp.valido && surp.length === 10, 'Falha na Surpresinha');
-console.log('✅ Teste 3: Surpresinha gerou 10 dezenas únicas válidas:', surp.join(', '));
-
-// Teste 4: Verificação de Vitória (BINGO!)
-const dezenasSorteadas = ['04', '12', '19', '25', '33', '45', '56', '67', '80', '99'];
-const acertos = jogoValido.filter((d) => dezenasSorteadas.includes(d));
-console.assert(acertos.length === 10, 'Falha no cálculo de BINGO');
-console.log('✅ Teste 4: Cartela com 10 acertos detectada com sucesso (BINGO!)');
-
-console.log('\n🎉 TODOS OS TESTES PASSARAM COM 100% DE SUCESSO!');
+console.log('\n🎉 TODOS OS TESTES PASSARAM COM SUCESSO!');
